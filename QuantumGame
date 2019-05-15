@@ -1,0 +1,164 @@
+from qiskit import *
+
+
+def heavy():
+    q = QuantumRegister(2)
+    c = ClassicalRegister(2)
+    circuit = QuantumCircuit(q, c)
+    circuit.h(q[0])
+    circuit.s(q[0])
+    circuit.t(q[0])
+    circuit.h(q[0])
+    circuit.h(q[1])
+    circuit.s(q[1])
+    circuit.h(q[1])
+    circuit.measure(q, c)
+
+    b = BasicAer.get_backend('qasm_simulator')
+    job = execute(circuit, b, shots=1024)
+    results = job.result()
+    x = results.get_counts(circuit)
+    result = ''
+    num1 = 0
+
+    for bit, temp in x.items():
+        if temp > num1:
+            num1 = temp
+            result = bit
+
+    return result
+
+
+def special():
+    q = QuantumRegister(2)
+    c = ClassicalRegister(2)
+    circuit = QuantumCircuit(q, c)
+    circuit.h(q[0])
+    circuit.s(q[0])
+    circuit.t(q[0])
+    circuit.h(q[1])
+    circuit.measure(q, c)
+    b = BasicAer.get_backend('qasm_simulator')
+    job = execute(circuit, b, shots=1024)
+    results = job.result()
+    x = results.get_counts(circuit)
+    num1 = 0
+    result = ''
+
+    for bit, temp in x.items():
+        if temp > num1:
+            num1 = temp
+            result = bit
+
+    return result
+
+
+monster_health = 100
+player_health = 50
+count = 0
+while count == 0:
+    print("Player Health: ", player_health)
+    print("Monster Health: ", monster_health)
+    print("1) Stab")
+    print("2) Shoot")
+    print("3) Heal")
+    choice = input("Choose Action")
+    if choice == '1':
+        hit = heavy()
+        if hit == '11' or hit == '10':
+            monster_health = monster_health - 7
+            print("You stabed the monster")
+        if hit == '00':
+            monster_health = monster_health - 15
+            print("Critical hit!!")
+            print("you stabed the monster")
+        if hit == '01':
+            print("you missed")
+
+    if choice == '2':
+        hit = heavy()
+        if hit == '11' or hit == '00':
+            monster_health = monster_health - 8
+            print("You shot the monster")
+        if hit == '01':
+            monster_health = monster_health - 18
+            print("Critical hit!!")
+            print("you shot the monster")
+        if hit == '10':
+            print("you missed")
+
+    if choice == '3':
+        hit = special()
+        if hit == '10':
+            player_health = player_health + 7
+            print("You healed yourself")
+        if hit == '00':
+            player_health = player_health + 15
+            print("Critical hit!!")
+            print("you healed yourself")
+        if hit == '11' or hit == '01':
+            print("fail")
+
+    monstermove = heavy()
+    if monstermove == '11':
+        chance = heavy()
+        if chance == '11' or chance == '01':
+            player_health = player_health - 3
+            print("monster slashed you")
+        if chance == '00':
+            player_health = player_health - 7
+            print("critical hit!")
+            print("monster slashed you")
+        if chance == '10':
+            print("the monster tried to slash you and missed")
+
+    if monstermove == '10':
+        chance = heavy()
+        if chance == '11' or chance == '01':
+            player_health = player_health - 5
+            print("monster slamed you")
+        if chance == '00':
+            player_health = player_health - 8
+            print("critical hit!")
+            print("monster slamed you")
+        if chance == '10':
+            print("the monster tried to slam you and missed")
+
+    if monstermove == '01':
+        chance = heavy()
+        if chance == '11' or chance == '01':
+            player_health = player_health - 2
+            print("monster bit you")
+        if chance == '00':
+            player_health = player_health - 5
+            print("critical hit!")
+            print("monster bit you")
+        if chance == '10':
+            print("the monster tried to bit you and missed")
+
+    if monstermove == '00':
+        chance = heavy()
+        if chance == '10' or chance == '01':
+            player_health = player_health - 19
+            print("monster used fire breath on you")
+
+        if chance == '11' or chance == '00':
+            print("the monster breathed fire and missed")
+
+    if player_health <= 0:
+        print("you died")
+        i = input("play again? y/n")
+        if i == 'y':
+            player_health = 20
+            monster_health = 50
+        if i == 'n':
+            count = 1
+
+    if monster_health < 0:
+        print("you win!!")
+        i = input("play again? y/n")
+        if i == 'y':
+            player_health = 20
+            monster_health = 50
+        if i == 'n':
+            count = 1
